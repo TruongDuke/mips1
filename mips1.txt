@@ -1,0 +1,79 @@
+#Trong chương trình này, một số được coi là số nguyên tố nếu nó không chia hết cho bất kỳ số nào khác ngoài 1 và chính nó. Để kiểm tra xem một số có phải là số nguyên tố hay không, chương trình thực hiện phép chia số đó cho tất cả các số từ 2 đến nó chính nó và kiểm tra xem có phần dư nào khác 0 hay không. Nếu không có phần dư nào, tức là số đó chỉ chia hết cho 1 và chính nó, nó sẽ được coi là số nguyên tố.
+
+
+
+
+
+.data 
+message1: 
+.asciiz "Nhap so: " 
+space: 
+.asciiz " " 
+.text 
+.globl main 
+main: 
+# Gọi message 1 để yêu cầu nhập một số 
+li $v0, 4 
+la $a0, message1 
+syscall 
+# Đọc giá trị từ bàn phím 
+li $v0, 5 
+syscall 
+# Di chuyển số nhập vào từ $v0 sang $t0 
+move $t0, $v0 
+# Khởi tạo biến i ($s0) 
+li $s0, 2 
+# Khởi tạo biến j 
+ble $t0, 2, end2  # Thoát chương trình mà không in gì vì không có số nguyên tố nào từ 0- 
+j loop1 # Bắt đầu vòng lặp đầu tiên  
+# In ra số hiện tại của vòng lặp ngoài 
+print: 
+li $v0, 1 
+move $a0, $s0 
+syscall 
+# In ra một dấu cách giữa mỗi số 
+li $v0, 4 
+la $a0, space 
+syscall 
+# Nhảy để tăng giá trị vòng lặp ngoài 
+j increment 
+# Đặt giá trị tùy ý "p" ($s1) thành 1 để cho chương trình biết không cần in lần lặp này 
+setp1: 
+li $s1, 1 
+addiu $s2, $s2, 1 # Tăng giá trị vòng lặp trong 
+j loop2  # Quay lại vòng lặp trong 
+# Tăng giá trị vòng lặp ngoài 
+increment
+addiu $s0, $s0, 1  
+# Kiểm tra kết thúc vòng lặp 
+beq $t0, $s0, end   # Tiếp tục vòng lặp 
+j loop1 
+# Kiểm tra giá trị tùy ý "p", nếu là 0, sẽ in ra lần lặp hiện tại của vòng lặp ngoài 
+checkPrint: 
+# Nhảy để in nếu là 0 
+beqz $s1, print 
+# Nhảy đến vòng lặp tiếp theo nếu là 1 
+j increment 
+# Vòng lặp ngoài 
+loop1: 
+# Đặt lại "p" thành 0 
+li $s1, 0 
+# Đặt lại vòng lặp trong thành 2 
+li $s2, 2 
+# Tiếp tục vòng lặp thứ hai 
+j loop2 
+# Vòng lặp thứ hai 
+loop2: 
+beq $s2, $s0, checkPrint # Kiểm tra xem vòng lặp đã hoàn thành chưa 
+rem $t1, $s0, $s2 # Lưu phần dư của vòng lặp ngoài chia cho vòng lặp trong vào thanh ghi t1  
+beqz $t1, setp1 # Nếu phần dư là 0, nhảy để đặt "p" ($s1) thành 1 
+addiu $s2, $s2, 1 # Tăng giá trị vòng lặp trong 
+j loop2 # Tiếp tục vòng lặp trong 
+# Kết thúc chương trình 
+end: 
+li $v0, 10 
+syscall 
+# Thoát vì từ 0-2 không có số nguyên tố  
+end2: 
+li $v0, 10 
+syscall
